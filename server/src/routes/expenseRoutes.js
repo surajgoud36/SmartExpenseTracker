@@ -1,6 +1,7 @@
 import {Router} from "express";
 import {createExpense, getExpenses, getExpenseById, updateExpense, deleteExpense} from "../controllers/expenseController.js";
 import { getSummary } from "../controllers/summaryController.js";
+
 const router = Router();
 
 router.get("/summary",getSummary);
