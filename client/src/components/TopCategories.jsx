@@ -4,8 +4,9 @@ import { paiseToRupees, formatPaise } from "../lib/format";
 import { CATEGORY_COLORS } from "../lib/constants";
 
 export default function TopCategories() {
-  const { data, isLoading } = useSummary();
+  const { data, isLoading, isError } = useSummary();
   if (isLoading) return <div className="panel">Loading…</div>;
+  if (isError || !data) return <div className="panel error">Failed to load top categories</div>;
 
   const chartData = data.topCategories.map((c) => ({
     name: c.category,

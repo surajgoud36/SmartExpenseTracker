@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Expense } from "../models/Expense.js";
 const MONTH_LABELS = [
   "Jan",
@@ -44,24 +45,25 @@ export async function getSummary(req, res) {
     const lastMonth = getMonthRange(-1);
     const trendStart = buildTrendSkeleton(6)[0];
     const trendStartDate = new Date(trendStart.year, trendStart.month - 1, 1);
-
+    const uid = new mongoose.Types.ObjectId(req.userId);
+    
     const [totalThisMonthAgg, totalLastMonthAgg, topCategories, rawTrend] =
       await Promise.all([
         // 1. total spent this month
         Expense.aggregate([
-          { $match: { date: { $gte: thisMonth.start, $lt: thisMonth.end } } },
+          { $match: { userId: uid, date: { $gte: thisMonth.start, $lt: thisMonth.end } } },
           { $group: { _id: null, total: { $sum: "$amount" } } },
         ]),
 
         // 2. total spent last month
         Expense.aggregate([
-          { $match: { date: { $gte: lastMonth.start, $lt: lastMonth.end } } },
+          { $match: {userId: uid, date: { $gte: lastMonth.start, $lt: lastMonth.end } } },
           { $group: { _id: null, total: { $sum: "$amount" } } },
         ]),
 
         // 3. top 5 categories this month
         Expense.aggregate([
-          { $match: { date: { $gte: thisMonth.start, $lt: thisMonth.end } } },
+          { $match: {userId: uid, date: { $gte: thisMonth.start, $lt: thisMonth.end } } },
           {
             $group: {
               _id: "$category",
@@ -75,7 +77,7 @@ export async function getSummary(req, res) {
 
         // 4. last 6 months, grouped by year + month
         Expense.aggregate([
-          { $match: { date: { $gte: trendStartDate } } },
+          { $match: {userId: uid, date: { $gte: trendStartDate } } },
           {
             $group: {
               _id: { y: { $year: "$date" }, m: { $month: "$date" } },

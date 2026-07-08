@@ -8,10 +8,19 @@ export default function ChatPanel() {
   const [busy, setBusy] = useState(false);
   const qc = useQueryClient();
   const bottomRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, busy]);
+
+  // grow the textarea to fit its content, up to the CSS max-height
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [input]);
 
   async function send() {
     const text = input.trim();
@@ -60,12 +69,18 @@ export default function ChatPanel() {
         <div ref={bottomRef} />
       </div>
       <div className="chat-input-row">
-        <input
-          type="text"
+        <textarea
+          ref={inputRef}
+          rows={1}
           value={input}
           placeholder="Ask about your spending…"
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              send();
+            }
+          }}
           disabled={busy}
         />
         <button

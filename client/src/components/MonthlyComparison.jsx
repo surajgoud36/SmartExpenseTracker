@@ -3,8 +3,9 @@ import { useSummary } from "../hooks/useExpenses";
 import { paiseToRupees, formatPaise } from "../lib/format";
 
 export default function MonthlyComparison() {
-  const { data, isLoading } = useSummary();
+  const { data, isLoading, isError } = useSummary();
   if (isLoading) return <div className="panel">Loading…</div>;
+  if (isError || !data) return <div className="panel error">Failed to load monthly spending</div>;
 
   const chartData = data.monthlyTrend.map((m) => ({
     label: m.label.replace(" 20", " '"), // "Jun '26"

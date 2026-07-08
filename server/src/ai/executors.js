@@ -1,19 +1,21 @@
+import mongoose from "mongoose";
 import { Expense } from "../models/Expense.js";
 
 const toRupees = (paise) => Math.round(paise) / 100;
 
-async function getSpendingSummary() {
+async function getSpendingSummary(userId) {
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  const uid = new mongoose.Types.ObjectId(userId);
 
   const [thisMonth, categories, trend] = await Promise.all([
     Expense.aggregate([
-      { $match: { date: { $gte: monthStart } } },
+      { $match: {userId: uid, date: { $gte: monthStart } } },
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]),
     Expense.aggregate([
-      { $match: { date: { $gte: monthStart } } },
+      { $match: {userId: uid, date: { $gte: monthStart } } },
       {
         $group: {
           _id: "$category",
@@ -24,7 +26,7 @@ async function getSpendingSummary() {
       { $sort: { total: -1 } },
     ]),
     Expense.aggregate([
-      { $match: { date: { $gte: sixMonthsAgo } } },
+      { $match: {userId: uid, date: { $gte: sixMonthsAgo } } },
       {
         $group: {
           _id: { y: { $year: "$date" }, m: { $month: "$date" } },
@@ -51,11 +53,12 @@ async function getSpendingSummary() {
   };
 }
 
-async function getCategoryBreakdown({ year, month }) {
+async function getCategoryBreakdown(userId,{ year, month }) {
   const start = new Date(year, month - 1, 1);
   const end = new Date(year, month, 1);
+  const uid = new mongoose.Types.ObjectId(userId);
   const rows = await Expense.aggregate([
-    { $match: { date: { $gte: start, $lt: end } } },
+    { $match: {userId: uid, date: { $gte: start, $lt: end } } },
     {
       $group: {
         _id: "$category",
@@ -76,8 +79,8 @@ async function getCategoryBreakdown({ year, month }) {
   };
 }
 
-async function queryExpenses({ category, dateFrom, dateTo, limit }) {
-  const filter = {};
+async function queryExpenses(userId,{ category, dateFrom, dateTo, limit }) {
+  const filter = {userId};
   if (category) filter.category = category;
   if (dateFrom || dateTo) {
     filter.date = {};
@@ -97,11 +100,12 @@ async function queryExpenses({ category, dateFrom, dateTo, limit }) {
   };
 }
 
-async function addExpense({ amountRupees, category, description, date }) {
+async function addExpense(userId,{ amountRupees, category, description, date }) {
   if (!amountRupees || amountRupees <= 0) {
     return { error: "Amount must be greater than 0." };
   }
   const expense = await Expense.create({
+    userId,
     amount: Math.round(amountRupees * 100), // rupees -> paise, server-side
     category,
     description: description || "",

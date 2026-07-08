@@ -60,7 +60,7 @@ export async function chat(req, res) {
         try {
           const fn = executors[block.name];
           result = fn
-            ? await fn(block.input)
+            ? await fn(req.userId,block.input)
             : { error: `Unknown tool: ${block.name}` };
           if (block.name === "add_expense" && result.created) wroteData = true;
         } catch (err) {

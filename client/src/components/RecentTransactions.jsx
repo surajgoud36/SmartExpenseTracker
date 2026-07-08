@@ -2,10 +2,11 @@ import { useExpenses, useDeleteExpense } from "../hooks/useExpenses";
 import { formatPaise } from "../lib/format";
 
 export default function RecentTransactions() {
-  const { data: expenses, isLoading } = useExpenses(10);
+  const { data: expenses, isLoading, isError } = useExpenses(10);
   const del = useDeleteExpense();
 
   if (isLoading) return <div className="panel">Loading…</div>;
+  if (isError || !expenses) return <div className="panel error">Failed to load transactions</div>;
 
   return (
     <div className="panel">
