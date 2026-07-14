@@ -38,12 +38,13 @@ export default function ChatPanel() {
         qc.invalidateQueries({ queryKey: ["summary"] });
         qc.invalidateQueries({ queryKey: ["expenses"] });
       }
-    } catch {
+    } catch (err) {
       setMessages([
         ...next,
         {
           role: "assistant",
-          content: "Sorry, something went wrong. Try again.",
+          content:
+            err.friendlyMessage || "Sorry, something went wrong. Try again.",
         },
       ]);
     } finally {
