@@ -2,7 +2,7 @@
 
 A full-stack MERN expense tracker with an **agentic AI assistant** that can analyze your spending — and record expenses from natural language ("add 450 for lunch today").
 
-**Live demo:** [your-app.vercel.app](https://your-app.vercel.app) · **API:** [your-service.onrender.com](https://your-service.onrender.com)
+**Live demo:** [smart-expense-tracker.vercel.app](https://smart-expense-tracker-seven-xi.vercel.app/) · **API:** [smart-expense-tracker.onrender.com](https://smartexpensetracker-2evd.onrender.com/health)
 
 > ⏱️ Note: the backend runs on Render's free tier and spins down when idle — the first request after a quiet period can take 30–60 seconds to cold-start.
 
