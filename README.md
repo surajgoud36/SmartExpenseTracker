@@ -158,4 +158,4 @@ Choices made deliberately for a free-tier portfolio deployment, with the product
 
 ---
 
-Built by **Suraj** · [LinkedIn](#) · [GitHub](#)
+Built by **Suraj** · [LinkedIn](https://www.linkedin.com/in/surajgoud36/) · [GitHub](https://github.com/surajgoud36)
